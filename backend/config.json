@@ -1,0 +1,11 @@
+{
+  "admin": {
+    "username": "admin",
+    "password": "123"
+  },
+  "settings": {
+    "max_file_size": 1,
+    "max_files_per_upload": 1,
+    "max_upload_errors": 0
+  }
+}
