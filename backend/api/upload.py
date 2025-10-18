@@ -151,7 +151,12 @@ async def upload_files(
             # 如果设置了错误限制为0（无限制），也继续处理
     
     # 如果有错误但未超过限制，返回部分成功的结果
-    if upload_errors:
+    # 但如果所有文件都失败了，则应该返回错误
+    if upload_errors and len(upload_errors) == len(files):
+        # 所有文件都上传失败
+        error_details = "; ".join([f"{err['filename']}: {err['error']}" for err in upload_errors])
+        raise HTTPException(status_code=400, detail=error_details)
+    elif upload_errors:
         # 可以选择是否在此处抛出异常或返回部分结果
         # 这里我们选择继续，但可以在响应中包含错误信息
         pass
