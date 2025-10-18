@@ -1,5 +1,13 @@
 <template>
   <div class="min-h-screen bg-secondary-50">
+    <!-- 添加加载提示 -->
+    <div v-if="isLoading" class="fixed top-4 right-4 z-50">
+      <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
+        <strong class="font-bold">正在处理... </strong>
+        <span class="block sm:inline">{{ loadingMessage }}</span>
+      </div>
+    </div>
+    
     <!-- Header -->
     <div class="bg-white shadow-sm border-b border-secondary-200">
       <div class="max-w-7xl mx-auto px-4 py-6">
@@ -277,7 +285,14 @@
             </div>
           </div>
           
-          <div class="bg-secondary-50 px-6 py-3 flex justify-end">
+          <div class="bg-secondary-50 px-6 py-3 flex justify-end space-x-3">
+            <button
+              v-if="taskFiles.length > 0"
+              @click="downloadAllFiles"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+            >
+              批量下载
+            </button>
             <button
               @click="showFilesModal = false"
               class="px-4 py-2 border border-secondary-300 text-secondary-700 rounded-md hover:bg-secondary-50 transition-colors"
@@ -450,6 +465,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import { message } from 'ant-design-vue';
 
 // Router
 const router = useRouter()
@@ -465,6 +481,10 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const selectedTask = ref<any>(null)
 const taskFiles = ref<any[]>([])
+
+// 添加加载提示相关的状态
+const loadingMessage = ref('')
+const isLoading = ref(false)
 
 const newTask = ref({
   name: '',
@@ -664,6 +684,57 @@ const viewFiles = async (task: any) => {
   }
 }
 
+const downloadAllFiles = async () => {
+  // 显示确认对话框，询问是否清理已下载的文件
+  const shouldDownload = confirm("是否要下载所有文件？\n点击\"确定\"开始下载，点击\"取消\"放弃下载。");
+  if (!shouldDownload) return;
+
+  const cleanAfterDownload = confirm("下载完成后是否要清理已下载的文件？\n注意：这将永久删除服务器上的文件，请谨慎操作！\n点击\"确定\"表示清理，点击\"取消\"表示保留文件。");
+
+  try {
+    showLoading('正在准备下载...');
+    
+    const token = localStorage.getItem('admin_token')
+    const response = await axios.get(`${API_BASE}/upload/${selectedTask.value.id}/download-all?clean=${cleanAfterDownload}`, {
+      headers: {
+        'Authorization': `Basic ${token}`
+      },
+      responseType: 'blob'
+    })
+    
+    hideLoading();
+    showLoading('正在下载文件...');
+
+    // 创建下载链接
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `task_${selectedTask.value.id}_files.zip`)
+    document.body.appendChild(link)
+    link.click()
+    
+    // 清理
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    
+    hideLoading();
+    if (cleanAfterDownload) {
+      showSuccess('文件打包下载成功，已清理服务器上的文件')
+    } else {
+      showSuccess('文件打包下载成功')
+    }
+  } catch (error: any) {
+    hideLoading();
+    if (error.response?.status === 401) {
+      // 未授权，跳转到登录页
+      localStorage.removeItem('admin_token')
+      router.push('/login')
+    } else {
+      showError('批量下载失败: ' + (error.response?.data?.detail || '未知错误'))
+    }
+  }
+}
+
 const saveSettings = async () => {
   // 验证密码设置
   if (settings.value.newPassword && settings.value.newPassword !== settings.value.confirmPassword) {
@@ -764,13 +835,24 @@ const formatFileSize = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-const showSuccess = (message: string) => {
-  successMessage.value = message
-  setTimeout(() => { successMessage.value = '' }, 3000)
+// 添加加载提示相关的方法
+const showLoading = (message: string) => {
+  loadingMessage.value = message
+  isLoading.value = true
 }
 
-const showError = (message: string) => {
-  errorMessage.value = message
-  setTimeout(() => { errorMessage.value = '' }, 5000)
+const hideLoading = () => {
+  isLoading.value = false
+  loadingMessage.value = ''
 }
+
+const showSuccess = (messageText: string) => {
+  message.success(messageText)
+}
+
+const showError = (messageText: string) => {
+  message.error(messageText)
+}
+
+// 在页面中找到notification部分，在其下方添加loading显示
 </script>

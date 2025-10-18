@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, BackgroundTasks
 from typing import List
 import os
 import shutil
@@ -10,6 +10,9 @@ from core.storage import task_storage
 # 添加导入
 import json
 from typing import Optional
+import zipfile
+from fastapi.responses import FileResponse
+import tempfile
 
 router = APIRouter()
 
@@ -196,3 +199,77 @@ async def list_uploaded_files(task_id: str):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取文件列表失败: {str(e)}")
+
+@router.get("/{task_id}/download-all")
+async def download_all_files(task_id: str, background_tasks: BackgroundTasks, clean: bool = False):
+    """打包下载任务下的所有文件"""
+    task = task_storage.get_task(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    
+    try:
+        task_folder = task.folder_path
+        
+        if not os.path.exists(task_folder):
+            raise HTTPException(status_code=404, detail="任务文件夹不存在")
+        
+        # 创建临时zip文件
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.zip')
+        temp_file.close()
+        
+        # 创建zip文件
+        with zipfile.ZipFile(temp_file.name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # 遍历所有上传者文件夹
+            for uploader_name in os.listdir(task_folder):
+                uploader_folder = os.path.join(task_folder, uploader_name)
+                if os.path.isdir(uploader_folder):
+                    # 遍历上传者文件夹中的所有文件
+                    for filename in os.listdir(uploader_folder):
+                        file_path = os.path.join(uploader_folder, filename)
+                        if os.path.isfile(file_path):
+                            # 在zip中创建文件路径，包含上传者文件夹
+                            zip_path = os.path.join(uploader_name, filename)
+                            zipf.write(file_path, zip_path)
+        
+        # 生成下载文件名
+        zip_filename = f"task_{task_id}_files.zip"
+        
+        # 如果需要清理原始文件，则添加清理任务
+        if clean:
+            background_tasks.add_task(cleanup_uploaded_files, task_folder)
+        
+        # 添加后台任务清理临时文件
+        background_tasks.add_task(cleanup_temp_file, temp_file.name)
+        
+        return FileResponse(
+            temp_file.name,
+            media_type='application/zip',
+            filename=zip_filename
+        )
+    
+    except Exception as e:
+        # 确保出错时也清理临时文件
+        try:
+            os.unlink(temp_file.name)
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=f"打包文件失败: {str(e)}")
+
+def cleanup_uploaded_files(folder_path: str):
+    """清理上传的文件"""
+    try:
+        import shutil
+        if os.path.exists(folder_path):
+            shutil.rmtree(folder_path)
+            # 重新创建空的任务文件夹
+            os.makedirs(folder_path, exist_ok=True)
+    except Exception as e:
+        # 记录错误但不中断主流程
+        pass
+
+def cleanup_temp_file(file_path: str):
+    """清理临时文件"""
+    try:
+        os.unlink(file_path)
+    except:
+        pass

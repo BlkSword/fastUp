@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
+import os
 from models.schemas import TaskCreate, TaskResponse, TaskStatus, UploadTaskInfo
 from core.storage import task_storage
 
@@ -16,11 +17,24 @@ async def get_upload_task_info(task_id: str):
     if task.status != TaskStatus.ACTIVE:
         raise HTTPException(status_code=400, detail="任务已关闭，无法上传文件")
     
+    # 每次都重新计算实际的文件数量
+    actual_file_count = 0
+    if os.path.exists(task.folder_path):
+        for root, dirs, files in os.walk(task.folder_path):
+            actual_file_count += len(files)
+    
+    # 更新存储中的文件计数
+    tasks = task_storage.load_tasks()
+    if task_id in tasks:
+        tasks[task_id]["uploaded_files_count"] = actual_file_count
+        task_storage.save_tasks(tasks)
+    
     return UploadTaskInfo(
         task_id=task.id,
         task_name=task.name,
         description=task.description,
-        status=task.status
+        status=task.status,
+        uploaded_files_count=actual_file_count
     )
 
 @router.post("/", response_model=TaskResponse)
