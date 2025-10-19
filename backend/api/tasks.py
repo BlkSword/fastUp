@@ -17,24 +17,16 @@ async def get_upload_task_info(task_id: str):
     if task.status != TaskStatus.ACTIVE:
         raise HTTPException(status_code=400, detail="任务已关闭，无法上传文件")
     
-    # 每次都重新计算实际的文件数量
-    actual_file_count = 0
-    if os.path.exists(task.folder_path):
-        for root, dirs, files in os.walk(task.folder_path):
-            actual_file_count += len(files)
-    
-    # 更新存储中的文件计数
-    tasks = task_storage.load_tasks()
-    if task_id in tasks:
-        tasks[task_id]["uploaded_files_count"] = actual_file_count
-        task_storage.save_tasks(tasks)
+    # 获取实际的文件数量和上传人数
+    actual_file_count, actual_users_count = task_storage.get_actual_counts(task.folder_path)
     
     return UploadTaskInfo(
         task_id=task.id,
         task_name=task.name,
         description=task.description,
         status=task.status,
-        uploaded_files_count=actual_file_count
+        uploaded_files_count=actual_file_count,
+        uploaded_users_count=actual_users_count
     )
 
 @router.post("/", response_model=TaskResponse)

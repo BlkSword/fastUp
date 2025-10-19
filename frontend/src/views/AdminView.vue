@@ -7,7 +7,7 @@
         <span class="block sm:inline">{{ loadingMessage }}</span>
       </div>
     </div>
-    
+
     <!-- Header -->
     <div class="bg-white shadow-sm border-b border-secondary-200">
       <div class="max-w-7xl mx-auto px-4 py-6">
@@ -17,24 +17,19 @@
             <p class="text-secondary-600 mt-1">文件收集任务管理</p>
           </div>
           <div class="flex items-center space-x-4">
-            <button
-              @click="logout"
-              class="inline-flex items-center px-4 py-2 border border-secondary-300 rounded-lg text-secondary-700 bg-white hover:bg-secondary-50 transition-colors font-medium"
-            >
+            <button @click="logout"
+              class="inline-flex items-center px-4 py-2 border border-secondary-300 rounded-lg text-secondary-700 bg-white hover:bg-secondary-50 transition-colors font-medium">
               退出登录
             </button>
-            <button
-              @click="showSettingsModal = true"
-              class="inline-flex items-center px-4 py-2 border border-secondary-300 rounded-lg text-secondary-700 bg-white hover:bg-secondary-50 transition-colors font-medium"
-            >
+            <button @click="showSettingsModal = true"
+              class="inline-flex items-center px-4 py-2 border border-secondary-300 rounded-lg text-secondary-700 bg-white hover:bg-secondary-50 transition-colors font-medium">
               设置
             </button>
-            <button
-              @click="showCreateModal = true"
-              class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
-            >
+            <button @click="showCreateModal = true"
+              class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium">
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                </path>
               </svg>
               创建任务
             </button>
@@ -52,7 +47,9 @@
             <div class="flex-shrink-0">
               <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
                 <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                  </path>
                 </svg>
               </div>
             </div>
@@ -68,7 +65,8 @@
             <div class="flex-shrink-0">
               <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
             </div>
@@ -84,7 +82,8 @@
             <div class="flex-shrink-0">
               <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                 </svg>
               </div>
             </div>
@@ -106,10 +105,15 @@
           <table class="min-w-full divide-y divide-secondary-200">
             <thead class="bg-secondary-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">任务信息</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">任务信息
+                </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">状态</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">文件数量</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">创建时间</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">文件数量
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">上传人数
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">创建时间
+                </th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">操作</th>
               </tr>
             </thead>
@@ -123,44 +127,35 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
-                        :class="getStatusClass(task.status)">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                    :class="getStatusClass(task.status)">
                     {{ getStatusText(task.status) }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-900">
                   {{ task.uploaded_files_count || 0 }}
                 </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-900">
+                  {{ task.uploaded_users_count || 0 }}
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-500">
                   {{ formatDate(task.created_at) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                  <button
-                    @click="copyUploadLink(task.id)"
-                    class="text-primary-600 hover:text-primary-900 transition-colors"
-                    title="复制上传链接"
-                  >
+                  <button @click="copyUploadLink(task.id)"
+                    class="text-primary-600 hover:text-primary-900 transition-colors" title="复制上传链接">
                     复制链接
                   </button>
-                  <button
-                    @click="viewFiles(task)"
-                    class="text-blue-600 hover:text-blue-900 transition-colors"
-                    title="查看文件"
-                  >
+                  <button @click="viewFiles(task)" class="text-blue-600 hover:text-blue-900 transition-colors"
+                    title="查看文件">
                     查看文件
                   </button>
-                  <button
-                    @click="toggleTaskStatus(task)"
-                    class="transition-colors"
-                    :class="task.status === 'active' ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'"
-                  >
+                  <button @click="toggleTaskStatus(task)" class="transition-colors"
+                    :class="task.status === 'active' ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'">
                     {{ task.status === 'active' ? '关闭' : '激活' }}
                   </button>
-                  <button
-                    @click="deleteTask(task)"
-                    class="text-red-600 hover:text-red-900 transition-colors"
-                    title="删除任务"
-                  >
+                  <button @click="deleteTask(task)" class="text-red-600 hover:text-red-900 transition-colors"
+                    title="删除任务">
                     删除
                   </button>
                 </td>
@@ -171,7 +166,9 @@
 
         <div v-if="tasks.length === 0" class="text-center py-12">
           <svg class="mx-auto h-12 w-12 text-secondary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+            </path>
           </svg>
           <h3 class="mt-2 text-sm font-medium text-secondary-900">暂无任务</h3>
           <p class="mt-1 text-sm text-secondary-500">开始创建您的第一个文件收集任务</p>
@@ -182,7 +179,8 @@
     <!-- Create Task Modal -->
     <div v-if="showCreateModal" class="fixed inset-0 bg-secondary-600 bg-opacity-50 overflow-y-auto z-50">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
+        <div
+          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
           <div class="bg-white px-6 pt-5 pb-4">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-medium text-secondary-900">创建新任务</h3>
@@ -192,50 +190,35 @@
                 </svg>
               </button>
             </div>
-            
+
             <form @submit.prevent="createTask" class="space-y-4">
               <div>
                 <label for="taskName" class="block text-sm font-medium text-secondary-700 mb-2">
                   任务名称 <span class="text-red-500">*</span>
                 </label>
-                <input
-                  id="taskName"
-                  v-model="newTask.name"
-                  type="text"
-                  required
+                <input id="taskName" v-model="newTask.name" type="text" required
                   class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="输入任务名称"
-                />
+                  placeholder="输入任务名称" />
               </div>
-              
+
               <div>
                 <label for="taskDescription" class="block text-sm font-medium text-secondary-700 mb-2">
                   任务描述
                 </label>
-                <textarea
-                  id="taskDescription"
-                  v-model="newTask.description"
-                  rows="3"
+                <textarea id="taskDescription" v-model="newTask.description" rows="3"
                   class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="输入任务描述（可选）"
-                ></textarea>
+                  placeholder="输入任务描述（可选）"></textarea>
               </div>
             </form>
           </div>
-          
+
           <div class="bg-secondary-50 px-6 py-3 flex justify-end space-x-3">
-            <button
-              @click="showCreateModal = false"
-              type="button"
-              class="px-4 py-2 border border-secondary-300 text-secondary-700 rounded-md hover:bg-secondary-50 transition-colors"
-            >
+            <button @click="showCreateModal = false" type="button"
+              class="px-4 py-2 border border-secondary-300 text-secondary-700 rounded-md hover:bg-secondary-50 transition-colors">
               取消
             </button>
-            <button
-              @click="createTask"
-              :disabled="!newTask.name || creating"
-              class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors"
-            >
+            <button @click="createTask" :disabled="!newTask.name || creating"
+              class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors">
               {{ creating ? '创建中...' : '创建任务' }}
             </button>
           </div>
@@ -246,7 +229,8 @@
     <!-- Files Modal -->
     <div v-if="showFilesModal" class="fixed inset-0 bg-secondary-600 bg-opacity-50 overflow-y-auto z-50">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-4xl w-full">
+        <div
+          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-4xl w-full">
           <div class="bg-white px-6 pt-5 pb-4">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-medium text-secondary-900">任务文件 - {{ selectedTask?.name }}</h3>
@@ -256,21 +240,21 @@
                 </svg>
               </button>
             </div>
-            
+
             <div v-if="taskFiles.length > 0" class="max-h-96 overflow-y-auto">
               <div class="space-y-2">
-                <div
-                  v-for="file in taskFiles"
-                  :key="file.filename + file.uploader_name"
-                  class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg border border-secondary-200"
-                >
+                <div v-for="file in taskFiles" :key="file.filename + file.uploader_name"
+                  class="flex items-center justify-between p-3 bg-secondary-50 rounded-lg border border-secondary-200">
                   <div class="flex items-center space-x-3">
                     <svg class="h-5 w-5 text-secondary-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
+                      <path fill-rule="evenodd"
+                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                        clip-rule="evenodd" />
                     </svg>
                     <div>
                       <p class="text-sm font-medium text-secondary-900">{{ file.filename }}</p>
-                      <p class="text-xs text-secondary-500">上传者: {{ file.uploader_name }} | {{ formatFileSize(file.size) }}</p>
+                      <p class="text-xs text-secondary-500">上传者: {{ file.uploader_name }} | {{ formatFileSize(file.size)
+                      }}</p>
                     </div>
                   </div>
                   <div class="text-xs text-secondary-500">
@@ -279,24 +263,19 @@
                 </div>
               </div>
             </div>
-            
+
             <div v-else class="text-center py-8">
               <p class="text-secondary-500">暂无上传文件</p>
             </div>
           </div>
-          
+
           <div class="bg-secondary-50 px-6 py-3 flex justify-end space-x-3">
-            <button
-              v-if="taskFiles.length > 0"
-              @click="downloadAllFiles"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
-            >
+            <button v-if="taskFiles.length > 0" @click="downloadAllFiles"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
               批量下载
             </button>
-            <button
-              @click="showFilesModal = false"
-              class="px-4 py-2 border border-secondary-300 text-secondary-700 rounded-md hover:bg-secondary-50 transition-colors"
-            >
+            <button @click="showFilesModal = false"
+              class="px-4 py-2 border border-secondary-300 text-secondary-700 rounded-md hover:bg-secondary-50 transition-colors">
               关闭
             </button>
           </div>
@@ -307,7 +286,8 @@
     <!-- Settings Modal -->
     <div v-if="showSettingsModal" class="fixed inset-0 bg-secondary-600 bg-opacity-50 overflow-y-auto z-50">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
+        <div
+          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all max-w-4xl w-full">
           <div class="bg-white px-6 pt-5 pb-4">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-medium text-secondary-900">系统设置</h3>
@@ -317,122 +297,168 @@
                 </svg>
               </button>
             </div>
-            
-            <form @submit.prevent="saveSettings" class="space-y-6">
-              <div>
-                <h4 class="text-md font-medium text-secondary-800 mb-3">管理员密码设置</h4>
-                <div class="space-y-3">
-                  <div>
-                    <label for="currentPassword" class="block text-sm font-medium text-secondary-700 mb-1">
-                      当前密码
-                    </label>
-                    <input
-                      id="currentPassword"
-                      v-model="settings.currentPassword"
-                      type="password"
-                      class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="请输入当前密码"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label for="newPassword" class="block text-sm font-medium text-secondary-700 mb-1">
-                      新密码
-                    </label>
-                    <input
-                      id="newPassword"
-                      v-model="settings.newPassword"
-                      type="password"
-                      class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="请输入新密码"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label for="confirmPassword" class="block text-sm font-medium text-secondary-700 mb-1">
-                      确认新密码
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      v-model="settings.confirmPassword"
-                      type="password"
-                      class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="请再次输入新密码"
-                    />
-                  </div>
-                </div>
+
+            <div class="flex">
+              <!-- Settings Navigation -->
+              <div class="w-1/4 pr-6">
+                <AMenu v-model:selectedKeys="selectedSettingKey" mode="vertical" :items="settingMenuItems"
+                  @click="handleSettingMenuClick" />
               </div>
-              
-              <div>
-                <h4 class="text-md font-medium text-secondary-800 mb-3">上传限制设置</h4>
-                <div class="space-y-3">
-                  <div>
-                    <label for="maxFileSize" class="block text-sm font-medium text-secondary-700 mb-1">
-                      单文件大小限制 (MB)
-                    </label>
-                    <input
-                      id="maxFileSize"
-                      v-model.number="settings.maxFileSize"
-                      type="number"
-                      min="0"
-                      class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="例如: 100"
-                    />
-                    <p class="text-xs text-secondary-500 mt-1">设置为0表示无限制</p>
+
+              <!-- Settings Content -->
+              <div class="w-3/4 pl-6">
+                <form @submit.prevent="saveSettings" class="space-y-6">
+                  <!-- Password Settings -->
+                  <div v-if="selectedSettingKey[0] === 'password'">
+                    <div class="space-y-3">
+                      <div>
+                        <label for="currentPassword" class="block text-sm font-medium text-secondary-700 mb-1">
+                          当前密码
+                        </label>
+                        <input id="currentPassword" v-model="settings.currentPassword" type="password"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="请输入当前密码" />
+                      </div>
+
+                      <div>
+                        <label for="newPassword" class="block text-sm font-medium text-secondary-700 mb-1">
+                          新密码
+                        </label>
+                        <input id="newPassword" v-model="settings.newPassword" type="password"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="请输入新密码" />
+                      </div>
+
+                      <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-secondary-700 mb-1">
+                          确认新密码
+                        </label>
+                        <input id="confirmPassword" v-model="settings.confirmPassword" type="password"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="请再次输入新密码" />
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div>
-                    <label for="maxFilesPerUpload" class="block text-sm font-medium text-secondary-700 mb-1">
-                      单次上传文件数量限制
-                    </label>
-                    <input
-                      id="maxFilesPerUpload"
-                      v-model.number="settings.maxFilesPerUpload"
-                      type="number"
-                      min="0"
-                      class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="例如: 10"
-                    />
-                    <p class="text-xs text-secondary-500 mt-1">设置为0表示无限制</p>
+
+                  <!-- Upload Limit Settings -->
+                  <div v-if="selectedSettingKey[0] === 'upload'">
+                    <div class="space-y-3">
+                      <div>
+                        <label for="maxFileSize" class="block text-sm font-medium text-secondary-700 mb-1">
+                          单文件大小限制 (MB)
+                        </label>
+                        <input id="maxFileSize" v-model.number="settings.maxFileSize" type="number" min="0"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="例如: 100" />
+                        <p class="text-xs text-secondary-500 mt-1">设置为0表示无限制</p>
+                      </div>
+
+                      <div>
+                        <label for="maxFilesPerUpload" class="block text-sm font-medium text-secondary-700 mb-1">
+                          单次上传文件数量限制
+                        </label>
+                        <input id="maxFilesPerUpload" v-model.number="settings.maxFilesPerUpload" type="number" min="0"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="例如: 10" />
+                        <p class="text-xs text-secondary-500 mt-1">设置为0表示无限制</p>
+                      </div>
+
+                      <div>
+                        <label for="maxUploadsPerUser" class="block text-sm font-medium text-secondary-700 mb-1">
+                          每人上传次数限制
+                        </label>
+                        <input id="maxUploadsPerUser" v-model.number="settings.maxUploadsPerUser" type="number" min="0"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="例如: 5" />
+                        <p class="text-xs text-secondary-500 mt-1">设置为0表示无限制</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
+
+                  <!-- Upload Whitelist Settings -->
+                  <div v-if="selectedSettingKey[0] === 'whitelist'">
+                    <div class="space-y-4">
+                      <div class="flex items-center justify-between">
+                        <label class="block text-sm font-medium text-secondary-700">
+                          启用上传者白名单
+                        </label>
+                        <a-switch v-model:checked="settings.enableUploadWhitelist"
+                          @change="(checked: boolean | string | number, e: Event) => toggleWhitelist(checked as boolean, e)" />
+                      </div>
+
+                      <div v-if="settings.enableUploadWhitelist">
+                        <label class="block text-sm font-medium text-secondary-700 mb-1">
+                          上传者名单（每行一个）
+                        </label>
+                        <textarea v-model="settings.uploadWhitelistText" rows="8"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="例如:&#10;张三&#10;李四&#10;王五"></textarea>
+                        <p class="text-xs text-secondary-500 mt-1">只有名单中的用户才能上传文件</p>
+
+                        <div class="mt-3">
+                          <label class="block text-sm font-medium text-secondary-700 mb-1">
+                            或者上传包含名单的txt文件
+                          </label>
+                          <div class="flex items-center space-x-2">
+                            <input ref="whitelistFileInput" type="file" accept=".txt"
+                              @change="handleWhitelistFileUpload" class="block w-full text-sm text-secondary-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-medium
+                                file:bg-primary-50 file:text-primary-700
+                                hover:file:bg-primary-100" />
+                            <button type="button" @click="uploadWhitelistFile" :disabled="!whitelistFile"
+                              class="px-3 py-2 bg-primary-600 text-white rounded-md text-sm hover:bg-primary-700 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors">
+                              上传文件
+                            </button>
+                          </div>
+                          <p class="text-xs text-secondary-500 mt-1">文件应包含每行一个名字的名单</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Error Limit Settings -->
+                  <div v-if="selectedSettingKey[0] === 'error'">
+                    <div class="space-y-3">
+                      <div>
+                        <label for="maxUploadErrors" class="block text-sm font-medium text-secondary-700 mb-1">
+                          最大上传错误数
+                        </label>
+                        <input id="maxUploadErrors" v-model.number="settings.maxUploadErrors" type="number" min="0"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="例如: 5" />
+                        <p class="text-xs text-secondary-500 mt-1">设置为0表示无限制</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Chunk Upload Settings -->
+                  <div v-if="selectedSettingKey[0] === 'chunk'">
+                    <div class="space-y-3">
+                      <div>
+                        <label for="chunkSize" class="block text-sm font-medium text-secondary-700 mb-1">
+                          分块大小 (MB)
+                        </label>
+                        <input id="chunkSize" v-model.number="settings.chunkSize" type="number" min="1" max="100"
+                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="例如: 4" />
+                        <p class="text-xs text-secondary-500 mt-1">分块上传时每个块的大小，建议设置为1-100MB</p>
+                      </div>
+                    </div>
+                  </div>
+                </form>
               </div>
-              
-              <div>
-                <h4 class="text-md font-medium text-secondary-800 mb-3">错误限制设置</h4>
-                <div class="space-y-3">
-                  <div>
-                    <label for="maxUploadErrors" class="block text-sm font-medium text-secondary-700 mb-1">
-                      最大上传错误数
-                    </label>
-                    <input
-                      id="maxUploadErrors"
-                      v-model.number="settings.maxUploadErrors"
-                      type="number"
-                      min="0"
-                      class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="例如: 5"
-                    />
-                    <p class="text-xs text-secondary-500 mt-1">设置为0表示无限制</p>
-                  </div>
-                </div>
-              </div>
-            </form>
+            </div>
           </div>
-          
+
           <div class="bg-secondary-50 px-6 py-3 flex justify-end space-x-3">
-            <button
-              @click="showSettingsModal = false"
-              type="button"
-              class="px-4 py-2 border border-secondary-300 text-secondary-700 rounded-md hover:bg-secondary-50 transition-colors"
-            >
+            <button @click="showSettingsModal = false" type="button"
+              class="px-4 py-2 border border-secondary-300 text-secondary-700 rounded-md hover:bg-secondary-50 transition-colors">
               取消
             </button>
-            <button
-              @click="saveSettings"
-              :disabled="savingSettings"
-              class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors"
-            >
+            <button @click="saveSettings" :disabled="savingSettings"
+              class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-secondary-300 disabled:cursor-not-allowed transition-colors">
               {{ savingSettings ? '保存中...' : '保存设置' }}
             </button>
           </div>
@@ -441,10 +467,13 @@
     </div>
 
     <!-- Success/Error Messages -->
-    <div v-if="successMessage" class="fixed top-4 right-4 bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg z-50">
+    <div v-if="successMessage"
+      class="fixed top-4 right-4 bg-green-50 border border-green-200 rounded-lg p-4 shadow-lg z-50">
       <div class="flex items-center">
         <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          <path fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd" />
         </svg>
         <p class="ml-3 text-sm font-medium text-green-800">{{ successMessage }}</p>
       </div>
@@ -453,7 +482,9 @@
     <div v-if="errorMessage" class="fixed top-4 right-4 bg-red-50 border border-red-200 rounded-lg p-4 shadow-lg z-50">
       <div class="flex items-center">
         <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          <path fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clip-rule="evenodd" />
         </svg>
         <p class="ml-3 text-sm font-medium text-red-800">{{ errorMessage }}</p>
       </div>
@@ -462,10 +493,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { message } from 'ant-design-vue';
+import { message, Menu, Switch } from 'ant-design-vue';
+import {
+  LockOutlined,
+  UploadOutlined,
+  CloseCircleOutlined,
+  PartitionOutlined,
+  UsergroupAddOutlined
+} from '@ant-design/icons-vue';
+
+const AMenu = Menu;
+const ASwitch = Switch;
 
 // Router
 const router = useRouter()
@@ -482,30 +523,85 @@ const errorMessage = ref('')
 const selectedTask = ref<any>(null)
 const taskFiles = ref<any[]>([])
 
+// 添加设置菜单相关的响应式数据
+const selectedSettingKey = ref(['password'])
+
 // 添加加载提示相关的状态
 const loadingMessage = ref('')
 const isLoading = ref(false)
+
+// 白名单文件上传相关
+const whitelistFile = ref<File | null>(null)
+const whitelistFileInput = ref<HTMLInputElement | null>(null)
 
 const newTask = ref({
   name: '',
   description: ''
 })
 
+// 初始化设置数据
 const settings = ref({
   currentPassword: '',
   newPassword: '',
   confirmPassword: '',
   maxFileSize: 0,
   maxFilesPerUpload: 0,
-  maxUploadErrors: 0
+  maxUploadErrors: 0,
+  chunkSize: 1, // 默认分块大小为1MB
+  maxUploadsPerUser: 0, // 默认每人上传次数无限制
+  enableUploadWhitelist: false, // 是否启用上传白名单
+  uploadWhitelistText: '' // 上传白名单文本
 })
+
+// 设置菜单项
+const settingMenuItems = ref([
+  {
+    key: 'password',
+    icon: () => h(LockOutlined),
+    label: '密码设置',
+    title: '密码设置'
+  },
+  {
+    key: 'upload',
+    icon: () => h(UploadOutlined),
+    label: '上传限制',
+    title: '上传限制设置'
+  },
+  {
+    key: 'whitelist',
+    icon: () => h(UsergroupAddOutlined),
+    label: '上传白名单',
+    title: '上传白名单设置'
+  },
+  {
+    key: 'error',
+    icon: () => h(CloseCircleOutlined),
+    label: '错误限制',
+    title: '错误限制设置'
+  },
+  {
+    key: 'chunk',
+    icon: () => h(PartitionOutlined),
+    label: '分块上传',
+    title: '分块上传设置'
+  }
+])
 
 // API base URL
 const API_BASE = 'http://localhost:8000/api'
 
 // Computed properties
 const activeTasks = computed(() => tasks.value.filter(task => task.status === 'active'))
-const totalFiles = computed(() => tasks.value.reduce((total, task) => total + (task.uploaded_files_count || 0), 0))
+const totalFiles = computed(() => tasks.value.reduce((total, task) => total + getFilesCount(task), 0))
+
+// Helper functions for displaying counts
+const getFilesCount = (task: any) => {
+  return task.uploaded_files_count || 0
+}
+
+const getUsersCount = (task: any) => {
+  return task.uploaded_users_count || 0
+}
 
 // Load tasks on mount
 onMounted(() => {
@@ -517,6 +613,11 @@ onMounted(() => {
 const logout = () => {
   localStorage.removeItem('admin_token')
   router.push('/login')
+}
+
+// 设置菜单点击处理函数
+const handleSettingMenuClick = (menuInfo: any) => {
+  selectedSettingKey.value = [menuInfo.key]
 }
 
 const loadTasks = async () => {
@@ -547,19 +648,24 @@ const loadSettings = async () => {
         'Authorization': `Basic ${token}`
       }
     })
-    
-    const data = response.data
-    settings.value.maxFileSize = data.max_file_size || 0
-    settings.value.maxFilesPerUpload = data.max_files_per_upload || 0
-    settings.value.maxUploadErrors = data.max_upload_errors || 0
+
+    settings.value.maxFileSize = response.data.max_file_size || 0
+    settings.value.maxFilesPerUpload = response.data.max_files_per_upload || 0
+    settings.value.maxUploadErrors = response.data.max_upload_errors || 0
+    settings.value.chunkSize = response.data.chunk_size || 1  // 默认为1MB
+    settings.value.maxUploadsPerUser = response.data.max_uploads_per_user || 0  // 默认无限制
+
+    // 处理白名单设置
+    const uploadWhitelist = response.data.upload_whitelist || []
+    settings.value.enableUploadWhitelist = uploadWhitelist.length > 0
+    settings.value.uploadWhitelistText = uploadWhitelist.join('\n')
   } catch (error: any) {
     if (error.response?.status === 401) {
       // 未授权，跳转到登录页
       localStorage.removeItem('admin_token')
       router.push('/login')
     } else {
-      // 不显示错误，使用默认值
-      console.warn('加载设置失败:', error)
+      showError('加载设置失败')
     }
   }
 }
@@ -598,7 +704,7 @@ const createTask = async () => {
 
 const toggleTaskStatus = async (task: any) => {
   const newStatus = task.status === 'active' ? 'inactive' : 'active'
-  
+
   try {
     const token = localStorage.getItem('admin_token')
     await axios.put(`${API_BASE}/tasks/${task.id}/status?status=${newStatus}`, {}, {
@@ -644,7 +750,7 @@ const deleteTask = async (task: any) => {
 
 const copyUploadLink = async (taskId: string) => {
   const link = `${window.location.origin}/upload/${taskId}`
-  
+
   try {
     await navigator.clipboard.writeText(link)
     showSuccess('上传链接已复制到剪贴板')
@@ -663,7 +769,7 @@ const copyUploadLink = async (taskId: string) => {
 const viewFiles = async (task: any) => {
   selectedTask.value = task
   showFilesModal.value = true
-  
+
   try {
     const token = localStorage.getItem('admin_token')
     const response = await axios.get(`${API_BASE}/upload/${task.id}/files`, {
@@ -672,6 +778,14 @@ const viewFiles = async (task: any) => {
       }
     })
     taskFiles.value = response.data.files || []
+
+    // 更新任务的文件数量和上传人数
+    if (response.data.actual_file_count !== undefined) {
+      task.uploaded_files_count = response.data.actual_file_count
+    }
+    if (response.data.actual_users_count !== undefined) {
+      task.uploaded_users_count = response.data.actual_users_count
+    }
   } catch (error: any) {
     if (error.response?.status === 401) {
       // 未授权，跳转到登录页
@@ -693,7 +807,7 @@ const downloadAllFiles = async () => {
 
   try {
     showLoading('正在准备下载...');
-    
+
     const token = localStorage.getItem('admin_token')
     const response = await axios.get(`${API_BASE}/upload/${selectedTask.value.id}/download-all?clean=${cleanAfterDownload}`, {
       headers: {
@@ -701,7 +815,7 @@ const downloadAllFiles = async () => {
       },
       responseType: 'blob'
     })
-    
+
     hideLoading();
     showLoading('正在下载文件...');
 
@@ -712,11 +826,11 @@ const downloadAllFiles = async () => {
     link.setAttribute('download', `task_${selectedTask.value.id}_files.zip`)
     document.body.appendChild(link)
     link.click()
-    
+
     // 清理
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
-    
+
     hideLoading();
     if (cleanAfterDownload) {
       showSuccess('文件打包下载成功，已清理服务器上的文件')
@@ -735,6 +849,87 @@ const downloadAllFiles = async () => {
   }
 }
 
+// 处理白名单文件选择
+const handleWhitelistFileUpload = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files.length > 0) {
+    whitelistFile.value = input.files[0]
+  }
+}
+
+// 上传白名单文件
+const uploadWhitelistFile = async () => {
+  if (!whitelistFile.value) {
+    showError('请选择一个文件')
+    return
+  }
+
+  try {
+    const token = localStorage.getItem('admin_token')
+    const formData = new FormData()
+    formData.append('file', whitelistFile.value)
+
+    const response = await axios.post(`${API_BASE}/settings/upload-whitelist-file`, formData, {
+      headers: {
+        'Authorization': `Basic ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    // 更新白名单文本框
+    settings.value.uploadWhitelistText = response.data.whitelist.join('\n')
+    settings.value.enableUploadWhitelist = true
+
+    // 清空文件输入框
+    if (whitelistFileInput.value) {
+      whitelistFileInput.value.value = ''
+    }
+    whitelistFile.value = null
+
+    showSuccess('白名单文件上传成功')
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      // 未授权，跳转到登录页
+      localStorage.removeItem('admin_token')
+      router.push('/login')
+    } else {
+      showError(error.response?.data?.detail || '白名单文件上传失败')
+    }
+  }
+}
+
+// 切换白名单启用状态
+const toggleWhitelist = async (checked: boolean, e?: Event) => {
+  try {
+    const token = localStorage.getItem('admin_token')
+
+    await axios.put(`${API_BASE}/settings/upload-whitelist-toggle`, {
+      enabled: checked
+    }, {
+      headers: {
+        'Authorization': `Basic ${token}`
+      }
+    })
+
+    // 如果禁用了白名单，清空文本框内容
+    if (!checked) {
+      settings.value.uploadWhitelistText = ''
+    }
+
+    showSuccess(`白名单已${checked ? '启用' : '禁用'}`)
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      // 未授权，跳转到登录页
+      localStorage.removeItem('admin_token')
+      router.push('/login')
+    } else {
+      showError(error.response?.data?.detail || '切换白名单状态失败')
+      // 如果API调用失败，恢复开关状态
+      settings.value.enableUploadWhitelist = !checked
+    }
+  }
+}
+
 const saveSettings = async () => {
   // 验证密码设置
   if (settings.value.newPassword && settings.value.newPassword !== settings.value.confirmPassword) {
@@ -745,7 +940,7 @@ const saveSettings = async () => {
   savingSettings.value = true
   try {
     const token = localStorage.getItem('admin_token')
-    
+
     // 如果提供了新密码，则更新密码
     if (settings.value.newPassword) {
       await axios.put(`${API_BASE}/settings/password`, {
@@ -757,26 +952,46 @@ const saveSettings = async () => {
         }
       })
     }
-    
+
+    // 准备上传白名单数据（仅在启用白名单时保存名单内容）
+    let uploadWhitelist = null
+    if (settings.value.enableUploadWhitelist) {
+      // 将文本按行分割并清理空白行
+      uploadWhitelist = settings.value.uploadWhitelistText
+        .split('\n')
+        .map(name => name.trim())
+        .filter(name => name.length > 0)
+    }
+
     // 更新其他设置
     const response = await axios.put(`${API_BASE}/settings`, {
       max_file_size: settings.value.maxFileSize,
       max_files_per_upload: settings.value.maxFilesPerUpload,
-      max_upload_errors: settings.value.maxUploadErrors
+      max_upload_errors: settings.value.maxUploadErrors,
+      chunk_size: settings.value.chunkSize,
+      max_uploads_per_user: settings.value.maxUploadsPerUser,
+      upload_whitelist: uploadWhitelist
     }, {
       headers: {
         'Authorization': `Basic ${token}`
       }
     })
-    
+
     // 更新本地设置值
     settings.value.maxFileSize = response.data.max_file_size || 0
     settings.value.maxFilesPerUpload = response.data.max_files_per_upload || 0
     settings.value.maxUploadErrors = response.data.max_upload_errors || 0
-    
+    settings.value.chunkSize = response.data.chunk_size || 1  // 默认为1MB
+    settings.value.maxUploadsPerUser = response.data.max_uploads_per_user || 0  // 默认无限制
+
+    // 处理白名单设置
+    const updatedUploadWhitelist = response.data.upload_whitelist || []
+    settings.value.enableUploadWhitelist = updatedUploadWhitelist.length > 0
+    settings.value.uploadWhitelistText = updatedUploadWhitelist.join('\n')
+
     showSuccess('设置保存成功')
     showSettingsModal.value = false
-    
+
     // 重置密码字段
     settings.value.currentPassword = ''
     settings.value.newPassword = ''

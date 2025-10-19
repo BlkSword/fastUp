@@ -1,7 +1,7 @@
 import os
 import json
 import uuid
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 from models.schemas import TaskResponse, TaskStatus, FileUploadResponse
 
@@ -53,18 +53,48 @@ class TaskStorage:
         
         return TaskResponse(**task_data)
     
+    def get_actual_counts(self, folder_path: str) -> Tuple[int, int]:
+        """Calculate actual file count and user count for a task folder"""
+        actual_file_count = 0
+        actual_users_count = 0
+        
+        if os.path.exists(folder_path):
+            try:
+                # Calculate number of users (subdirectories)
+                actual_users_count = len(next(os.walk(folder_path))[1])
+                
+                # Calculate total number of files
+                for root, dirs, files in os.walk(folder_path):
+                    actual_file_count += len(files)
+            except Exception:
+                # If any error occurs during calculation, return zeros
+                pass
+                
+        return actual_file_count, actual_users_count
+    
+    def get_all_tasks(self) -> List[TaskResponse]:
+        """Get all tasks with updated counts"""
+        tasks = self.load_tasks()
+        result = []
+        for task_data in tasks.values():
+            task = TaskResponse(**task_data)
+            # Update task with actual file count
+            actual_file_count, _ = self.get_actual_counts(task.folder_path)
+            task.uploaded_files_count = actual_file_count
+            result.append(task)
+        return result
+    
     def get_task(self, task_id: str) -> Optional[TaskResponse]:
-        """Get a task by ID"""
+        """Get a task by ID with updated counts"""
         tasks = self.load_tasks()
         task_data = tasks.get(task_id)
         if task_data:
-            return TaskResponse(**task_data)
+            task = TaskResponse(**task_data)
+            # Update task with actual file count
+            actual_file_count, _ = self.get_actual_counts(task.folder_path)
+            task.uploaded_files_count = actual_file_count
+            return task
         return None
-    
-    def get_all_tasks(self) -> List[TaskResponse]:
-        """Get all tasks"""
-        tasks = self.load_tasks()
-        return [TaskResponse(**task_data) for task_data in tasks.values()]
     
     def update_task_status(self, task_id: str, status: TaskStatus) -> Optional[TaskResponse]:
         """Update task status"""

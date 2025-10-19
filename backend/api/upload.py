@@ -13,8 +13,13 @@ from typing import Optional
 import zipfile
 from fastapi.responses import FileResponse
 import tempfile
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 router = APIRouter()
+
+# 创建线程池用于文件操作
+file_operation_executor = ThreadPoolExecutor(max_workers=10)
 
 # 获取配置文件路径
 config_path = os.path.join(os.path.dirname(__file__), '..', 'config.json')
@@ -32,6 +37,55 @@ def get_settings():
     config = load_config()
     return config.get("settings", {})
 
+# 分块上传相关常量
+def get_chunk_size():
+    """获取分块大小设置，默认为1MB"""
+    settings = get_settings()
+    chunk_size_mb = settings.get("chunk_size", 1)  # 默认1MB
+    return chunk_size_mb * 1024 * 1024  # 转换为字节
+
+CHUNK_SIZE = get_chunk_size()
+
+def get_user_upload_count(task_id: str, uploader_name: str) -> int:
+    """获取用户在特定任务中的上传文件数量"""
+    task = task_storage.get_task(task_id)
+    if not task:
+        return 0
+    
+    task_folder = task.folder_path
+    uploader_folder = os.path.join(task_folder, uploader_name)
+    
+    if not os.path.exists(uploader_folder):
+        return 0
+    
+    # 计算该用户文件夹中的文件数量
+    count = 0
+    try:
+        for filename in os.listdir(uploader_folder):
+            file_path = os.path.join(uploader_folder, filename)
+            if os.path.isfile(file_path):
+                count += 1
+    except OSError:
+        pass
+    
+    return count
+
+def check_upload_whitelist(uploader_name: str) -> bool:
+    """检查上传者是否在白名单中"""
+    settings = get_settings()
+    whitelist = settings.get("upload_whitelist")
+    
+    # 如果没有设置白名单，则允许所有用户上传
+    if not whitelist:
+        return True
+    
+    # 如果白名单为空，则允许所有用户上传
+    if len(whitelist) == 0:
+        return True
+    
+    # 检查上传者是否在白名单中（不区分大小写）
+    return uploader_name.strip().lower() in [name.strip().lower() for name in whitelist]
+
 async def save_uploaded_file(file: UploadFile, task_id: str, uploader_name: str) -> FileUploadResponse:
     """保存上传的文件到指定任务目录下的姓名文件夹"""
     
@@ -43,9 +97,23 @@ async def save_uploaded_file(file: UploadFile, task_id: str, uploader_name: str)
     if task.status.value != "active":
         raise HTTPException(status_code=400, detail="任务已关闭，无法上传文件")
     
+    # 检查上传者是否在白名单中
+    if not check_upload_whitelist(uploader_name):
+        raise HTTPException(status_code=403, detail="您不在允许上传的名单中")
+    
     # 获取设置
     settings = get_settings()
     max_file_size = settings.get("max_file_size")
+    max_uploads_per_user = settings.get("max_uploads_per_user")
+    
+    # 检查每人上传次数限制
+    if max_uploads_per_user and max_uploads_per_user > 0:
+        current_upload_count = get_user_upload_count(task_id, uploader_name)
+        if current_upload_count >= max_uploads_per_user:
+            raise HTTPException(
+                status_code=400,
+                detail=f"您已达到上传次数限制 ({max_uploads_per_user}次)"
+            )
     
     # 检查文件大小限制
     if max_file_size and max_file_size > 0:
@@ -70,11 +138,17 @@ async def save_uploaded_file(file: UploadFile, task_id: str, uploader_name: str)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         file_path = os.path.join(uploader_folder, f"{name}_{timestamp}{ext}")
     
-    # 保存文件
+    # 流式保存文件，适用于大文件
     try:
+        # 获取分块大小设置，默认为16MB
+        chunk_size = get_chunk_size() or (16 * 1024 * 1024)
         async with aiofiles.open(file_path, 'wb') as f:
-            content = await file.read()
-            await f.write(content)
+            # 分块读取和写入，避免将整个文件载入内存
+            while True:
+                chunk = await file.read(chunk_size)
+                if not chunk:
+                    break
+                await f.write(chunk)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"文件保存失败: {str(e)}")
     
@@ -106,9 +180,23 @@ async def upload_files(
     if not files:
         raise HTTPException(status_code=400, detail="请选择要上传的文件")
     
+    # 检查上传者是否在白名单中（提前检查）
+    if not check_upload_whitelist(uploader_name):
+        raise HTTPException(status_code=403, detail="您不在允许上传的名单中")
+    
     # 获取设置
     settings = get_settings()
     max_files_per_upload = settings.get("max_files_per_upload")
+    max_uploads_per_user = settings.get("max_uploads_per_user")
+    
+    # 检查每人上传次数限制（提前检查）
+    if max_uploads_per_user and max_uploads_per_user > 0:
+        current_upload_count = get_user_upload_count(task_id, uploader_name)
+        if current_upload_count + len(files) > max_uploads_per_user:
+            raise HTTPException(
+                status_code=400,
+                detail=f"上传文件数量将超过您的上传次数限制 ({max_uploads_per_user}次)，当前已上传 {current_upload_count} 次"
+            )
     
     # 检查文件数量限制
     if max_files_per_upload and max_files_per_upload > 0:
@@ -195,81 +283,125 @@ async def list_uploaded_files(task_id: str):
                                 "upload_time": datetime.fromtimestamp(stat.st_mtime)
                             })
         
-        return {"files": files_info, "total_count": len(files_info)}
+        # 获取实际的文件数量和上传人数
+        actual_file_count, actual_users_count = task_storage.get_actual_counts(task_folder)
+        
+        return {
+            "files": files_info, 
+            "total_count": len(files_info),
+            "actual_file_count": actual_file_count,
+            "actual_users_count": actual_users_count
+        }
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"获取文件列表失败: {str(e)}")
 
-@router.get("/{task_id}/download-all")
-async def download_all_files(task_id: str, background_tasks: BackgroundTasks, clean: bool = False):
-    """打包下载任务下的所有文件"""
+# 分块上传相关常量
+CHUNK_SIZE = 1024 * 1024  # 1MB chunks
+
+@router.post("/{task_id}/chunked")
+async def upload_large_file_chunk(
+    task_id: str,
+    uploader_name: str = Form(...),
+    filename: str = Form(...),
+    chunk: UploadFile = File(...),
+    chunk_index: int = Form(...),
+    total_chunks: int = Form(...),
+):
+    """
+    分块上传大文件
+    """
+    # 验证任务是否存在且状态为活跃
     task = task_storage.get_task(task_id)
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
     
-    try:
-        task_folder = task.folder_path
-        
-        if not os.path.exists(task_folder):
-            raise HTTPException(status_code=404, detail="任务文件夹不存在")
-        
-        # 创建临时zip文件
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.zip')
-        temp_file.close()
-        
-        # 创建zip文件
-        with zipfile.ZipFile(temp_file.name, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # 遍历所有上传者文件夹
-            for uploader_name in os.listdir(task_folder):
-                uploader_folder = os.path.join(task_folder, uploader_name)
-                if os.path.isdir(uploader_folder):
-                    # 遍历上传者文件夹中的所有文件
-                    for filename in os.listdir(uploader_folder):
-                        file_path = os.path.join(uploader_folder, filename)
-                        if os.path.isfile(file_path):
-                            # 在zip中创建文件路径，包含上传者文件夹
-                            zip_path = os.path.join(uploader_name, filename)
-                            zipf.write(file_path, zip_path)
-        
-        # 生成下载文件名
-        zip_filename = f"task_{task_id}_files.zip"
-        
-        # 如果需要清理原始文件，则添加清理任务
-        if clean:
-            background_tasks.add_task(cleanup_uploaded_files, task_folder)
-        
-        # 添加后台任务清理临时文件
-        background_tasks.add_task(cleanup_temp_file, temp_file.name)
-        
-        return FileResponse(
-            temp_file.name,
-            media_type='application/zip',
-            filename=zip_filename
-        )
+    if task.status.value != "active":
+        raise HTTPException(status_code=400, detail="任务已关闭，无法上传文件")
     
-    except Exception as e:
-        # 确保出错时也清理临时文件
-        try:
-            os.unlink(temp_file.name)
-        except:
-            pass
-        raise HTTPException(status_code=500, detail=f"打包文件失败: {str(e)}")
-
-def cleanup_uploaded_files(folder_path: str):
-    """清理上传的文件"""
+    # 检查上传者是否在白名单中
+    if not check_upload_whitelist(uploader_name):
+        raise HTTPException(status_code=403, detail="您不在允许上传的名单中")
+    
+    # 获取设置
+    settings = get_settings()
+    max_uploads_per_user = settings.get("max_uploads_per_user")
+    
+    # 检查每人上传次数限制（仅在第一个块时检查）
+    if chunk_index == 0 and max_uploads_per_user and max_uploads_per_user > 0:
+        current_upload_count = get_user_upload_count(task_id, uploader_name)
+        if current_upload_count >= max_uploads_per_user:
+            raise HTTPException(
+                status_code=400,
+                detail=f"您已达到上传次数限制 ({max_uploads_per_user}次)"
+            )
+    
+    # 获取分块大小设置
+    chunk_size = get_chunk_size()
+    
+    # 创建临时目录存储文件块
+    temp_dir = os.path.join(task.folder_path, "temp_uploads", uploader_name)
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    # 存储当前块
+    chunk_filename = f"{filename}.part{chunk_index}"
+    chunk_path = os.path.join(temp_dir, chunk_filename)
+    
     try:
-        import shutil
-        if os.path.exists(folder_path):
-            shutil.rmtree(folder_path)
-            # 重新创建空的任务文件夹
-            os.makedirs(folder_path, exist_ok=True)
+        async with aiofiles.open(chunk_path, 'wb') as f:
+            while True:
+                data = await chunk.read(chunk_size)
+                if not data:
+                    break
+                await f.write(data)
+                
+        # 检查是否所有块都已上传完成
+        all_chunks_received = all(
+            os.path.exists(os.path.join(temp_dir, f"{filename}.part{i}"))
+            for i in range(total_chunks)
+        )
+        
+        if all_chunks_received:
+            # 组装完整文件
+            final_path = os.path.join(task.folder_path, uploader_name, filename)
+            
+            # 确保目标目录存在
+            os.makedirs(os.path.dirname(final_path), exist_ok=True)
+            
+            # 合并所有块
+            async with aiofiles.open(final_path, 'wb') as final_file:
+                for i in range(total_chunks):
+                    chunk_file_path = os.path.join(temp_dir, f"{filename}.part{i}")
+                    async with aiofiles.open(chunk_file_path, 'rb') as chunk_file:
+                        while True:
+                            data = await chunk_file.read(chunk_size)
+                            if not data:
+                                break
+                            await final_file.write(data)
+                    
+                    # 删除已合并的块
+                    os.remove(chunk_file_path)
+            
+            # 删除临时目录
+            try:
+                os.rmdir(temp_dir)
+            except OSError:
+                pass  # 目录可能不为空或其他原因，暂不处理
+            
+            # 更新任务的文件数量
+            task_storage.increment_file_count(task_id)
+            
+            # 返回最终文件信息
+            stat = os.stat(final_path)
+            return {
+                "filename": filename,
+                "file_path": final_path,
+                "size": stat.st_size,
+                "upload_time": datetime.fromtimestamp(stat.st_mtime),
+                "uploader_name": uploader_name
+            }
+        else:
+            return {"message": f"分块 {chunk_index+1}/{total_chunks} 上传成功"}
+            
     except Exception as e:
-        # 记录错误但不中断主流程
-        pass
-
-def cleanup_temp_file(file_path: str):
-    """清理临时文件"""
-    try:
-        os.unlink(file_path)
-    except:
-        pass
+        raise HTTPException(status_code=500, detail=f"分块上传失败: {str(e)}")

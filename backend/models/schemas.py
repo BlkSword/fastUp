@@ -37,6 +37,7 @@ class UploadTaskInfo(BaseModel):
     description: Optional[str] = None
     status: TaskStatus
     uploaded_files_count: int = 0
+    uploaded_users_count: int = 0
     
     class Config:
         from_attributes = True
