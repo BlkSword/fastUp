@@ -433,20 +433,6 @@
                     </div>
                   </div>
 
-                  <!-- Chunk Upload Settings -->
-                  <div v-if="selectedSettingKey[0] === 'chunk'">
-                    <div class="space-y-3">
-                      <div>
-                        <label for="chunkSize" class="block text-sm font-medium text-secondary-700 mb-1">
-                          分块大小 (MB)
-                        </label>
-                        <input id="chunkSize" v-model.number="settings.chunkSize" type="number" min="1" max="100"
-                          class="w-full px-3 py-2 border border-secondary-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                          placeholder="例如: 4" />
-                        <p class="text-xs text-secondary-500 mt-1">分块上传时每个块的大小，建议设置为1-100MB</p>
-                      </div>
-                    </div>
-                  </div>
                 </form>
               </div>
             </div>
@@ -501,7 +487,6 @@ import {
   LockOutlined,
   UploadOutlined,
   CloseCircleOutlined,
-  PartitionOutlined,
   UsergroupAddOutlined
 } from '@ant-design/icons-vue';
 
@@ -547,7 +532,6 @@ const settings = ref({
   maxFileSize: 0,
   maxFilesPerUpload: 0,
   maxUploadErrors: 0,
-  chunkSize: 1, // 默认分块大小为1MB
   maxUploadsPerUser: 0, // 默认每人上传次数无限制
   enableUploadWhitelist: false, // 是否启用上传白名单
   uploadWhitelistText: '' // 上传白名单文本
@@ -578,12 +562,6 @@ const settingMenuItems = ref([
     icon: () => h(CloseCircleOutlined),
     label: '错误限制',
     title: '错误限制设置'
-  },
-  {
-    key: 'chunk',
-    icon: () => h(PartitionOutlined),
-    label: '分块上传',
-    title: '分块上传设置'
   }
 ])
 
@@ -652,7 +630,6 @@ const loadSettings = async () => {
     settings.value.maxFileSize = response.data.max_file_size || 0
     settings.value.maxFilesPerUpload = response.data.max_files_per_upload || 0
     settings.value.maxUploadErrors = response.data.max_upload_errors || 0
-    settings.value.chunkSize = response.data.chunk_size || 1  // 默认为1MB
     settings.value.maxUploadsPerUser = response.data.max_uploads_per_user || 0  // 默认无限制
 
     // 处理白名单设置
@@ -968,7 +945,6 @@ const saveSettings = async () => {
       max_file_size: settings.value.maxFileSize,
       max_files_per_upload: settings.value.maxFilesPerUpload,
       max_upload_errors: settings.value.maxUploadErrors,
-      chunk_size: settings.value.chunkSize,
       max_uploads_per_user: settings.value.maxUploadsPerUser,
       upload_whitelist: uploadWhitelist
     }, {
@@ -981,7 +957,6 @@ const saveSettings = async () => {
     settings.value.maxFileSize = response.data.max_file_size || 0
     settings.value.maxFilesPerUpload = response.data.max_files_per_upload || 0
     settings.value.maxUploadErrors = response.data.max_upload_errors || 0
-    settings.value.chunkSize = response.data.chunk_size || 1  // 默认为1MB
     settings.value.maxUploadsPerUser = response.data.max_uploads_per_user || 0  // 默认无限制
 
     // 处理白名单设置

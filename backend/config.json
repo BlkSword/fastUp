@@ -7,7 +7,6 @@
     "max_file_size": 1000,
     "max_files_per_upload": 1,
     "max_upload_errors": 0,
-    "chunk_size": 16,
     "max_uploads_per_user": 1,
     "upload_whitelist": []
   }

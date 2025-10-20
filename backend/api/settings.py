@@ -19,7 +19,6 @@ class SettingsUpdate(BaseModel):
     max_file_size: Optional[int] = None  # MB
     max_files_per_upload: Optional[int] = None
     max_upload_errors: Optional[int] = None
-    chunk_size: Optional[int] = None  # MB
     max_uploads_per_user: Optional[int] = None  # 每人上传次数限制
     upload_whitelist: Optional[List[str]] = None  # 上传者白名单
 
@@ -30,7 +29,6 @@ class SettingsResponse(BaseModel):
     max_file_size: Optional[int] = None  # MB
     max_files_per_upload: Optional[int] = None
     max_upload_errors: Optional[int] = None
-    chunk_size: Optional[int] = None  # MB
     max_uploads_per_user: Optional[int] = None  # 每人上传次数限制
     upload_whitelist: Optional[List[str]] = None  # 上传者白名单
 
@@ -38,7 +36,6 @@ class PublicSettingsResponse(BaseModel):
     max_file_size: Optional[int] = None  # MB
     max_files_per_upload: Optional[int] = None
     max_upload_errors: Optional[int] = None
-    chunk_size: Optional[int] = None  # MB
     max_uploads_per_user: Optional[int] = None  # 每人上传次数限制
     upload_whitelist_enabled: Optional[bool] = None  # 是否启用白名单
 
@@ -64,7 +61,6 @@ async def get_settings(username: str = Depends(verify_admin)):
         max_file_size=settings.get("max_file_size"),
         max_files_per_upload=settings.get("max_files_per_upload"),
         max_upload_errors=settings.get("max_upload_errors"),
-        chunk_size=settings.get("chunk_size"),
         max_uploads_per_user=settings.get("max_uploads_per_user"),
         upload_whitelist=settings.get("upload_whitelist")
     )
@@ -82,7 +78,6 @@ async def get_public_settings():
         max_file_size=settings.get("max_file_size"),
         max_files_per_upload=settings.get("max_files_per_upload"),
         max_upload_errors=settings.get("max_upload_errors"),
-        chunk_size=settings.get("chunk_size"),
         max_uploads_per_user=settings.get("max_uploads_per_user"),
         upload_whitelist_enabled=upload_whitelist_enabled
     )
@@ -106,9 +101,6 @@ async def update_settings(settings: SettingsUpdate, username: str = Depends(veri
     if settings.max_upload_errors is not None:
         config["settings"]["max_upload_errors"] = settings.max_upload_errors
         
-    if settings.chunk_size is not None:
-        config["settings"]["chunk_size"] = settings.chunk_size
-        
     if settings.max_uploads_per_user is not None:
         config["settings"]["max_uploads_per_user"] = settings.max_uploads_per_user
         
@@ -122,7 +114,6 @@ async def update_settings(settings: SettingsUpdate, username: str = Depends(veri
         max_file_size=config["settings"].get("max_file_size"),
         max_files_per_upload=config["settings"].get("max_files_per_upload"),
         max_upload_errors=config["settings"].get("max_upload_errors"),
-        chunk_size=config["settings"].get("chunk_size"),
         max_uploads_per_user=config["settings"].get("max_uploads_per_user"),
         upload_whitelist=config["settings"].get("upload_whitelist")
     )

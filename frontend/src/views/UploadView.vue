@@ -143,18 +143,7 @@
         </div>
       </div>
 
-      <!-- Success Message -->
-      <div v-if="uploadSuccess" class="mt-6">
-        <a-alert message="上传成功" description="您的文件已成功上传！" type="success" show-icon closable
-          @close="() => { uploadSuccess = false }" />
-      </div>
-
-      <!-- Error Message -->
-      <div v-if="uploadError && showError" class="mt-6">
-        <a-alert :message="uploadError" type="error" show-icon closable @close="hideErrorMessage" />
-      </div>
-
-      <!-- Limit Info -->
+      <!-- 上传限制信息 -->
       <div v-if="limitInfo" class="mt-6">
         <a-alert message="上传限制" type="info" show-icon>
           <template #description>
@@ -167,6 +156,12 @@
             </ul>
           </template>
         </a-alert>
+      </div>
+
+      <!-- Footer with attribution -->
+      <div class="mt-8 text-center text-gray-500 text-sm">
+        <p>Powered by <a href="https://github.com/BlkSword" target="_blank"
+            class="text-indigo-600 hover:text-indigo-800">BlkSword</a> © 2025 中特理学社</p>
       </div>
     </div>
   </div>
@@ -188,7 +183,6 @@ const taskNotFound = ref(false)
 const uploaderName = ref('')
 const selectedFiles = ref<File[]>([])
 const uploading = ref(false)
-const uploadSuccess = ref(false)
 const uploadError = ref('')
 const limitInfo = ref<any>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -203,12 +197,6 @@ const uploadSpeed = ref(0) // bytes per second
 const timeRemaining = ref(0) // seconds
 const currentUploadingFile = ref('') // 当前正在上传的文件
 
-// 错误消息显示控制
-const showError = ref(false)
-const hideErrorMessage = () => {
-  uploadError.value = ''
-  showError.value = false
-}
 
 // API base URL
 const API_BASE = 'http://localhost:8000/api'
@@ -243,6 +231,9 @@ const loadLimitInfo = async () => {
   }
 }
 
+// 错误消息显示控制
+const showError = ref(false)
+
 // 检查用户名是否符合白名单要求（简单验证格式）
 const validateUploaderName = () => {
   if (!uploaderName.value.trim()) {
@@ -272,6 +263,7 @@ const handleFileSelect = (event: Event) => {
       selectedFiles.value = []
       input.value = ''
       showError.value = true
+      message.warning(`单次上传文件数量超过限制 (${limitInfo.value.max_files_per_upload}个文件)`)
       return
     }
 
@@ -292,6 +284,7 @@ const handleFileSelect = (event: Event) => {
         selectedFiles.value = []
         input.value = ''
         showError.value = true
+        message.warning(`文件 ${oversizedFile.name} 超过大小限制 (${limitInfo.value.max_file_size}MB)`)
         return
       }
     }
@@ -309,6 +302,7 @@ const handleDrop = (event: DragEvent) => {
     if (limitInfo.value?.max_files_per_upload && files.length > limitInfo.value.max_files_per_upload) {
       uploadError.value = `单次上传文件数量超过限制 (${limitInfo.value.max_files_per_upload}个文件)`
       showError.value = true
+      message.warning(`单次上传文件数量超过限制 (${limitInfo.value.max_files_per_upload}个文件)`)
       return
     }
 
@@ -326,6 +320,7 @@ const handleDrop = (event: DragEvent) => {
       if (oversizedFile) {
         uploadError.value = `文件 ${oversizedFile.name} 超过大小限制 (${limitInfo.value.max_file_size}MB)`
         showError.value = true
+        message.warning(`文件 ${oversizedFile.name} 超过大小限制 (${limitInfo.value.max_file_size}MB)`)
         return
       }
     }
@@ -338,17 +333,67 @@ const removeFile = (index: number) => {
   selectedFiles.value.splice(index, 1)
 }
 
+// 预检查上传限制
+const precheckUpload = async () => {
+  try {
+    const formData = new FormData();
+    formData.append('uploader_name', uploaderName.value.trim());
+    formData.append('file_count', selectedFiles.value.length.toString());
+
+    // 计算总文件大小
+    let totalSize = 0;
+    selectedFiles.value.forEach(file => {
+      totalSize += file.size;
+    });
+    formData.append('total_size', totalSize.toString());
+
+    const response = await axios.post(
+      `${API_BASE}/upload/${route.params.taskId}/precheck`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    );
+
+    const data = response.data;
+    if (!data.can_upload) {
+      uploadError.value = data.reason || '上传检查失败';
+      showError.value = true;
+      message.warning(data.reason || '上传检查失败');
+      return false;
+    }
+
+    return true;
+  } catch (error: any) {
+    console.error('预检查失败:', error);
+    uploadError.value = '上传前检查失败，请稍后重试';
+    showError.value = true;
+    message.error('上传前检查失败，请稍后重试');
+    return false;
+  }
+};
+
 // 普通文件上传方法
 const uploadFiles = async () => {
   // 验证上传者姓名
   if (!validateUploaderName()) {
+    message.warning(uploadError.value)
     return
   }
 
   if (selectedFiles.value.length === 0) {
     uploadError.value = '请选择要上传的文件'
     showError.value = true
+    message.warning('请选择要上传的文件')
     return
+  }
+
+  // 执行预检查
+  const canUpload = await precheckUpload();
+  if (!canUpload) {
+    return;
   }
 
   // 前端验证上传限制（二次确认）
@@ -357,6 +402,7 @@ const uploadFiles = async () => {
     if (limitInfo.value.max_files_per_upload && selectedFiles.value.length > limitInfo.value.max_files_per_upload) {
       uploadError.value = `单次上传文件数量超过限制 (${limitInfo.value.max_files_per_upload}个文件)`
       showError.value = true
+      message.warning(`单次上传文件数量超过限制 (${limitInfo.value.max_files_per_upload}个文件)`)
       return
     }
 
@@ -367,29 +413,26 @@ const uploadFiles = async () => {
         if (file.size > maxSizeInBytes) {
           uploadError.value = `文件 ${file.name} 超过大小限制 (${limitInfo.value.max_file_size}MB)`
           showError.value = true
+          message.warning(`文件 ${file.name} 超过大小限制 (${limitInfo.value.max_file_size}MB)`)
           return
         }
       }
     }
+
+    // 验证每人上传次数限制（在上传前检查）
+    if (limitInfo.value.max_uploads_per_user) {
+      // 这里我们无法在前端准确检查已上传次数，所以添加一个提示
+      console.log('每人上传次数限制:', limitInfo.value.max_uploads_per_user)
+    }
   }
 
-  // 判断是否有大文件需要分块上传
-  const LARGE_FILE_THRESHOLD = 50 * 1024 * 1024; // 50MB阈值
-  const hasLargeFiles = selectedFiles.value.some(file => file.size > LARGE_FILE_THRESHOLD);
-
-  if (hasLargeFiles) {
-    // 使用分块上传处理大文件
-    await uploadFilesInChunks();
-  } else {
-    // 使用普通上传处理小文件
-    await uploadFilesNormal();
-  }
+  // 使用直接上传处理所有文件
+  await uploadFilesNormal();
 }
 
 // 普通文件上传
 const uploadFilesNormal = async () => {
   uploading.value = true
-  uploadSuccess.value = false
   uploadError.value = ''
   uploadProgress.value = 0
   uploadSpeed.value = 0
@@ -449,7 +492,6 @@ const uploadFilesNormal = async () => {
     })
 
     message.success('文件上传成功！');
-    uploadSuccess.value = true
     selectedFiles.value = []
     uploaderName.value = ''
   } catch (error: any) {
@@ -462,7 +504,6 @@ const uploadFilesNormal = async () => {
     } else {
       uploadError.value = '文件上传失败，请稍后重试'
     }
-    showError.value = true
     message.error('文件上传失败：' + (error.response?.data?.detail || '请稍后重试'));
   } finally {
     uploading.value = false
@@ -470,144 +511,6 @@ const uploadFilesNormal = async () => {
     uploadSpeed.value = 0
     timeRemaining.value = 0
     currentUploadingFile.value = ''
-  }
-}
-
-// 分块上传大文件
-const uploadFilesInChunks = async () => {
-  uploading.value = true
-  uploadSuccess.value = false
-  uploadError.value = ''
-  uploadProgress.value = 0
-  uploadSpeed.value = 0
-  timeRemaining.value = 0
-
-  try {
-    // 从limitInfo获取分块大小设置，默认为1MB
-    const chunkSizeInMB = limitInfo.value?.chunk_size || 1;
-    const CHUNK_SIZE = chunkSizeInMB * 1024 * 1024; // 转换为字节
-    const largeFileThreshold = 50 * 1024 * 1024; // 50MB
-
-    // 分离大文件和小文件
-    const smallFiles: File[] = [];
-    const largeFiles: File[] = [];
-
-    selectedFiles.value.forEach(file => {
-      if (file.size > largeFileThreshold) {
-        largeFiles.push(file);
-      } else {
-        smallFiles.push(file);
-      }
-    });
-
-    // 先上传小文件
-    if (smallFiles.length > 0) {
-      const formData = new FormData();
-      formData.append('uploader_name', uploaderName.value.trim());
-
-      smallFiles.forEach(file => {
-        formData.append('files', file);
-      });
-
-      await axios.post(`${API_BASE}/upload/${route.params.taskId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-    }
-
-    // 逐个上传大文件
-    for (const file of largeFiles) {
-      currentUploadingFile.value = file.name;
-      const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-
-      // 记录开始时间
-      const startTime = Date.now();
-      let lastTime = startTime;
-      let lastLoaded = 0;
-      let totalUploaded = 0;
-      // 用于计算整体上传速度的变量
-      let overallStartTime = Date.now();
-      let overallLastTime = overallStartTime;
-      let overallLastLoaded = 0;
-
-      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        const start = chunkIndex * CHUNK_SIZE;
-        const end = Math.min(start + CHUNK_SIZE, file.size);
-        const chunk = file.slice(start, end);
-
-        const formData = new FormData();
-        formData.append('uploader_name', uploaderName.value.trim());
-        formData.append('filename', file.name);
-        formData.append('chunk', chunk);
-        formData.append('chunk_index', chunkIndex.toString());
-        formData.append('total_chunks', totalChunks.toString());
-
-        await axios.post(`${API_BASE}/upload/${route.params.taskId}/chunked`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.total) {
-              // 计算整体进度
-              const chunkUploaded = (chunkIndex * CHUNK_SIZE) + progressEvent.loaded;
-              totalUploaded = chunkUploaded;
-              const totalSize = file.size;
-              const percentCompleted = Math.round((totalUploaded * 100) / totalSize);
-              uploadProgress.value = percentCompleted;
-
-              // 计算上传速度和剩余时间
-              const currentTime = Date.now();
-              const timeElapsed = (currentTime - overallLastTime) / 1000; // 转换为秒
-              const dataLoaded = chunkUploaded - overallLastLoaded;
-
-              if (timeElapsed >= 1) { // 每秒更新一次速度
-                uploadSpeed.value = dataLoaded / timeElapsed;
-                overallLastTime = currentTime;
-                overallLastLoaded = chunkUploaded;
-
-                // 计算剩余时间（秒）
-                const remainingBytes = totalSize - totalUploaded;
-                if (uploadSpeed.value > 0) {
-                  timeRemaining.value = remainingBytes / uploadSpeed.value;
-                }
-              } else if (overallLastTime === overallStartTime) {
-                // 首次计算速度
-                const totalElapsed = (currentTime - overallStartTime) / 1000;
-                if (totalElapsed > 0) {
-                  uploadSpeed.value = chunkUploaded / totalElapsed;
-                  const remainingBytes = totalSize - totalUploaded;
-                  if (uploadSpeed.value > 0) {
-                    timeRemaining.value = remainingBytes / uploadSpeed.value;
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
-    }
-
-    message.success('文件上传成功！');
-    uploadSuccess.value = true;
-    selectedFiles.value = [];
-    uploaderName.value = '';
-  } catch (error: any) {
-    console.error('上传失败:', error);
-    // 显示详细的错误信息
-    if (error.response?.data?.detail) {
-      uploadError.value = error.response.data.detail;
-    } else {
-      uploadError.value = '文件上传失败，请稍后重试';
-    }
-    showError.value = true;
-    message.error('文件上传失败：' + (error.response?.data?.detail || '请稍后重试'));
-  } finally {
-    uploading.value = false;
-    uploadProgress.value = 0;
-    uploadSpeed.value = 0;
-    timeRemaining.value = 0;
-    currentUploadingFile.value = '';
   }
 }
 

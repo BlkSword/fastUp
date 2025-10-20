@@ -34,7 +34,7 @@ class TaskStorage:
     def create_task(self, name: str, description: Optional[str] = None) -> TaskResponse:
         """Create a new upload task"""
         task_id = str(uuid.uuid4())
-        folder_path = os.path.join("uploads", task_id)
+        folder_path = f"uploads/{task_id}"
         os.makedirs(folder_path, exist_ok=True)
         
         task_data = {
